@@ -43,7 +43,7 @@ if st.button("Predict"):
 
         st.success(f"Predicted Image : **{result}**")
 
-        st.image(uploaded_file,caption="Uploaded Image",use_container_width=True )
+        st.image(uploaded_file,caption="Uploaded Image",width="stretch")
         
         
 

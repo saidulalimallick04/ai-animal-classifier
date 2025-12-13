@@ -1,1 +1,8 @@
+# Ignore all .h5 files
 *.h5 
+
+# Ignore all .pyc files
+__pycache__
+
+# Ignore dataset
+dataset
