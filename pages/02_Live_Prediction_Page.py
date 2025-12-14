@@ -34,19 +34,25 @@ def run():
     input_image = None
     
     with tab1:
-        camera_image = st.camera_input("Take a picture",)
-        if camera_image:
-            input_image = camera_image
-
+        col1, col2 = st.columns(2, border=True)
+        with col1:
+            camera_image = st.camera_input("Take a picture",)
+            if camera_image:
+                input_image = camera_image
+        with col2:
+            st.write("Captured Image")
+            if camera_image:
+                st.image(camera_image, caption="Input Image", width='stretch')
+            
     with tab2:
         uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
         if uploaded_file:
             input_image = uploaded_file
+            st.image(uploaded_file, caption="Uploaded Image", width=300)
 
     if input_image is not None:
-        # Display image
+        # Load image (Preview handled in tabs)
         image = Image.open(input_image)
-        st.image(image, caption="Input Image", width=300)
         
         # Generate a unique key for the current image
         # For CameraInput, it's bytes. For FileUploader, it's a file-like object with name.
@@ -68,7 +74,7 @@ def run():
             st.session_state.live_prediction_result = None
             st.session_state.live_last_image_key = current_image_key
 
-        if st.button("Predict 🚀", type="primary"):
+        if st.button("Predict 🚀", type="primary", width='stretch'):
             st.session_state.live_prediction_result = None # Clear old
             with st.spinner("Processing..."):
                 try:

@@ -87,7 +87,7 @@ def load_sidebar() -> Path | None:
                  return None
         else:
             st.sidebar.error(f"⚠️ Model file missing at: {full_path}")
-            st.sidebar.info("ℹ️ No Google Drive ID found in metadata to auto-download.")
+            st.sidebar.error("ℹ️ No Google Drive ID found in metadata to auto-download.")
             return None
         
     st.sidebar.success(f"✅ Selected: {choice}")
