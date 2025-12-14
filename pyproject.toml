@@ -8,5 +8,6 @@ dependencies = [
     "pandas>=2.3.3",
     "scipy>=1.15.3",
     "streamlit>=1.52.1",
+    "streamlit-local-storage>=0.0.25",
     "tensorflow>=2.20.0",
 ]

@@ -1,4 +1,3 @@
-import os
 import csv
 import uuid
 from datetime import datetime
@@ -7,7 +6,7 @@ from PIL import Image
 
 PREDICTION_HISTORY_DIR = Path("prediction-history")
 
-def save_prediction(model_name: str, image: Image.Image, predicted_label: str, confidence: float, class_index: int):
+def save_prediction(model_name: str, image: Image.Image, predicted_label: str, confidence: float, class_index: int) -> None:
     """
     Saves the prediction image and logs the details to a CSV file.
     
@@ -28,17 +27,46 @@ def save_prediction(model_name: str, image: Image.Image, predicted_label: str, c
     image_filename = f"{timestamp}_{unique_id}.png"
     image_path = model_dir / image_filename
     
-    # 3. Save Image
+    
+    # Setup CSV path for duplicate check and later usage
+    csv_path = model_dir / "prediction-history.csv"
+    file_exists = csv_path.exists()
+
+    # 3. Check for Duplicate Content (Prevent saving same image consecutively)
+    try:
+        if file_exists:
+            # Get last recorded filename from CSV
+            last_filename = None
+            with open(csv_path, mode='r', newline='', encoding='utf-8') as f:
+                rows = list(csv.reader(f))
+                if len(rows) > 1:
+                    last_filename = rows[-1][1] # Image Filename is index 1
+            
+            if last_filename:
+                last_image_path = model_dir / last_filename
+                if last_image_path.exists():
+                     # Compare hashes
+                    import hashlib
+                    def get_hash(img):
+                        return hashlib.md5(img.tobytes()).hexdigest()
+                    
+                    current_hash = get_hash(image)
+                    last_hash = get_hash(Image.open(last_image_path))
+                    
+                    if current_hash == last_hash:
+                        print(f"Skipping duplicate save for {model_name}.")
+                        return
+    except Exception as e:
+        print(f"Duplicate check warning: {e}")
+
+    # 4. Save Image
     try:
         image.save(image_path)
     except Exception as e:
         print(f"Error saving history image: {e}")
         return
 
-    # 4. Save to CSV
-    csv_path = model_dir / "prediction-history.csv"
-    file_exists = csv_path.exists()
-    
+    # 5. Save to CSV
     try:
         with open(csv_path, mode='a', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
@@ -59,7 +87,7 @@ def save_prediction(model_name: str, image: Image.Image, predicted_label: str, c
     except Exception as e:
         print(f"Error saving history log: {e}")
 
-def update_last_prediction_feedback(model_name: str, satisfaction_score: int):
+def update_last_prediction_feedback(model_name: str, satisfaction_score: int) -> None:
     """
     Updates the Satisfaction column of the last entry in the model's history CSV.
     

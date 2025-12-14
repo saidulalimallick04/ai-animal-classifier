@@ -26,22 +26,21 @@ def select_model(model_names: list[str]) -> str | None:
         return None
     return st.selectbox("Select a model to view details", model_names)
 
-
 def load_model(model_path: Path) -> tf.keras.Model:
     """Load a Keras model from the given path.
     Raises FileNotFoundError if the file does not exist.
     """
     if not model_path.exists():
         raise FileNotFoundError(f"Model file not found: {model_path}")
-    return tf.keras.models.load_model(str(model_path))
+    return tf.keras.models.load_model(str(model_path), compile=False)
 
-def predict(model: tf.keras.Model, image_array):
-    """Run prediction on a pre‑processed image array.
+def predict(model: tf.keras.Model, image_array) -> tf.Tensor:
+    """Run prediction on a pre-processed image array.
     Returns the raw prediction tensor.
     """
     return model.predict(image_array)
 
-def get_predicted_label(model_name: str, class_index: int) -> str:
+def get_predicted_label(model_name: str, class_index: int) -> str | None:
     """Get the label for a given class index and model name from metadata."""
     try:
         df = get_model_metadata()

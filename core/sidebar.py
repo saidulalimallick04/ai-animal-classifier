@@ -9,7 +9,7 @@ import streamlit as st
 from pathlib import Path
 
 def load_sidebar() -> Path | None:
-    """Render a model‑selection sidebar.
+    """Render a model-selection sidebar.
 
     Returns
     -------
@@ -34,7 +34,11 @@ def load_sidebar() -> Path | None:
     choice = st.sidebar.selectbox("Select a model", model_names)
     selected_path = model_dir / choice
     st.sidebar.success(f"✅ Selected model: {choice}")
-    print("--------------------")
-    print("Selected model path:", selected_path)
-    print("--------------------")
     return selected_path
+
+
+def sidebar_info() -> None:
+    '''
+    Render a sidebar with information about the application.
+    '''
+    pass

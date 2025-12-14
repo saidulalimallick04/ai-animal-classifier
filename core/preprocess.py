@@ -4,7 +4,7 @@ Utilities for image preprocessing used in the project.
 - validate_image(path): checks if image can be opened.
 - repair_and_resize(path, output_path, size=(224,224)): loads, converts to RGB, resizes, saves.
 """
-import os
+import numpy as np
 from pathlib import Path
 from PIL import Image, ImageFile
 
@@ -31,7 +31,6 @@ def repair_and_resize(image_path: Path, output_path: Path, size: tuple[int, int]
         output_path.parent.mkdir(parents=True, exist_ok=True)
         img.save(output_path, format="JPEG", quality=95)
 
-import numpy as np
 def load_and_preprocess_image(image_path: Path, target_size: tuple[int, int] = (224, 224)) -> np.ndarray:
     """Load an image, resize it, and convert to a NumPy array for prediction.
     

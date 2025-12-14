@@ -8,9 +8,8 @@ from core.sidebar import load_sidebar
 PREDICTION_HISTORY_DIR = Path("prediction-history")
 
 def run():
-    st.title("🕒 Prediction History")
-    st.write("View past predictions and their details.")
-    st.markdown("---")
+    # Center the title
+    st.markdown("<h1 style='text-align: center;'>🕒 Prediction History</h1>", unsafe_allow_html=True)
 
     # 1. Load model from Sidebar to filter history
     model_path = load_sidebar()
@@ -19,7 +18,7 @@ def run():
         return
 
     model_name = model_path.name
-    st.subheader(f"History for: `{model_name}`")
+    st.markdown(f"## Model: `{model_name}`")
 
     # 2. Check for History Directory and CSV
     model_history_dir = PREDICTION_HISTORY_DIR / model_name

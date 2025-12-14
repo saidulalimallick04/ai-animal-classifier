@@ -1,4 +1,5 @@
 import os
+import time
 import random
 import logging
 import warnings
@@ -21,24 +22,32 @@ warnings.filterwarnings(
 )
 
 def is_image_valid(image_path: Path) -> bool:
-    """Return True if the image can be opened and does not trigger known problems.
-
-    The function skips:
-    * Corrupted files that raise an exception on open/verify.
-    * Palette ("P") images that contain a transparency entry (the warning the user saw).
+    """Return True if the image can be opened and does not trigger ANY warnings or errors.
+    
+    As per user request: "Any warning or serious issue just ignore that file".
     """
     try:
-        with Image.open(image_path) as img:
-            # Verify that Pillow can read the image data
-            img.verify()
-            # Re-open to inspect mode/info (verify() closes the file)
-        with Image.open(image_path) as img:
-            if img.mode == "P" and "transparency" in img.info:
-                logging.warning(f"Skipping palette image with transparency: {image_path}")
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always") # Cause all warnings to be caught
+            
+            with Image.open(image_path) as img:
+                # Verify that Pillow can read the image data
+                img.verify()
+                
+            # If any warning occurred during open/verify, consider it invalid
+            if len(w) > 0:
+                logging.warning(f"Skipping {image_path}: Triggered {len(w)} warning(s). First: {w[0].message}")
                 return False
+                
+            # Re-open to check mode safely
+            with Image.open(image_path) as img:
+                 if img.mode not in ("RGB", "L", "RGBA"):
+                     # Strict mode check if desired, or just catch transparency issues
+                     pass
+                     
         return True
     except Exception as e:
-        logging.warning(f"Corrupted or unreadable image skipped: {image_path} ({e})")
+        logging.warning(f"Skipping {image_path}: Corrupted or unreadable ({e})")
         return False
 
 def repair_and_save(image_path: Path, output_path: Path, target_size: tuple | None = None) -> None:
@@ -112,5 +121,15 @@ if __name__ == "__main__":
     TEST_PERCENTAGE = 0.20  # 20% for validation
 
     logging.info(f"Starting preprocessing: {INPUT_ROOT} → {TRAIN_ROOT} (train), {TEST_ROOT} (test)")
+    
+    start_time = time.time()
+    logging.info(f"Script started at: {time.ctime(start_time)}")
+    
     process_images(INPUT_ROOT, TRAIN_ROOT, TEST_ROOT, target_size=TARGET_SIZE, test_percentage=TEST_PERCENTAGE)
+    
+    end_time = time.time()
+    duration = end_time - start_time
+    
     logging.info("Image preprocessing completed.")
+    logging.info(f"Script ended at: {time.ctime(end_time)}")
+    logging.info(f"Total execution time: {duration:.2f} seconds")

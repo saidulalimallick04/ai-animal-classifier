@@ -44,7 +44,7 @@ def load_json_config(config_path: Path) -> Dict[str, Any]:
 # Misc helpers
 # ----------------------------------------------------------------------
 def chunk_list(data: list[Any], chunk_size: int) -> list[list[Any]]:
-    """Split a list into equally‑sized chunks.
+    """Split a list into equally-sized chunks.
 
     Example:
         >>> chunk_list([1,2,3,4,5], 2)
