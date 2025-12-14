@@ -2,19 +2,33 @@
 
 Utilities for loading the TensorFlow/Keras model and making predictions.
 """
+import os
 import tensorflow as tf
 from pathlib import Path
 import pandas as pd
 import streamlit as st
 
+# Suppress TensorFlow INFO and WARNING logs
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+
+# Suppress TF Python warnings
+tf.get_logger().setLevel('ERROR')
+
+
 def get_model_metadata() -> pd.DataFrame:
-    """Read the model details CSV."""
-    csv_path = Path("prediction-model/aaa-model-details.csv")
-    if not csv_path.exists():
-        st.error(f"Model details file not found at: {csv_path}")
+    """Read the model details JSON."""
+    json_path = Path("prediction-model/model-details.json")
+    if not json_path.exists():
+        # Fallback to CSV if JSON missing (during migration)
+        csv_path = Path("prediction-model/aaa-model-details.csv")
+        if csv_path.exists():
+             return pd.read_csv(csv_path)
+             
+        st.error(f"Model details file not found at: {json_path}")
         return pd.DataFrame()
     try:
-        return pd.read_csv(csv_path)
+        return pd.read_json(json_path)
     except Exception as e:
         st.error(f"Error reading model details: {e}")
         return pd.DataFrame()
@@ -32,7 +46,7 @@ def load_model(model_path: Path) -> tf.keras.Model:
     """
     if not model_path.exists():
         raise FileNotFoundError(f"Model file not found: {model_path}")
-    return tf.keras.models.load_model(str(model_path), compile=False)
+    return tf.keras.models.load_model(Path(model_path), compile=False)
 
 def predict(model: tf.keras.Model, image_array) -> tf.Tensor:
     """Run prediction on a pre-processed image array.

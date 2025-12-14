@@ -111,16 +111,16 @@ time_str = time.strftime("%Y%m%d-%H%M%S")
 model_filename = f"animalClassifier_{time_str}.h5"
 model.save(f"../prediction-model/{model_filename}")
 
+import json
+
 # ------------------------------------------------------------
-# 5️⃣ Save Model Metadata
+# 5️⃣ Save Model Metadata (JSON)
 # ------------------------------------------------------------
 # Get Metrics
 train_acc = history.history['accuracy'][-1]
 val_acc = history.history['val_accuracy'][-1]
 
-# Create comma-separated list of labels in order (0, 1, 2...)
-# class_names are strings "1", "2"... 
-# We need to map them back to names using id_to_name
+# Create comma-separated list of labels
 ordered_labels = []
 for cid in class_names:
     ordered_labels.append(id_to_name.get(int(cid), "unknown"))
@@ -128,42 +128,45 @@ output_labels_str = ",".join(ordered_labels)
 
 # Restore missing model_filename definition
 model_filename = f"animalClassifier_{time_str}.keras" 
-csv_file_path = "../prediction-model/aaa-model-details.csv"
+json_file_path = "../prediction-model/model-details.json"
 
-# Columns: model_name,prediction_type,no_of_output_categories,input_shape,
-#          validation_accuracy,train_accuracy,model_path,model_type,
-#          architecture,optimizer,learning_rate,epochs,output_labels
+# Create Dictionary
+model_data = {
+    "model_name": f"animalClassifier_{time_str}",
+    "prediction_type": "Categorical",
+    "no_of_output_categories": len(class_names),
+    "input_shape": "(224,224,3)",
+    "validation_accuracy": float(f"{val_acc:.2f}"), # Save as number
+    "train_accuracy": float(f"{train_acc:.2f}"),    # Save as number
+    "model_path": f"../prediction-model/{model_filename}",
+    "model_type": "MobileNetV2",
+    "architecture": "MobileNetV2-GlobalAvgBase-Dense-256",
+    "optimizer": "Adam",
+    "learning_rate": "1e-4",
+    "epochs": 10,
+    "output_labels": output_labels_str,
+    "g_drive_file_id": "no-url-found" # Default placeholder for manual update
+}
 
-row_data = [
-    f"animalClassifier_{time_str}",           # model_name
-    "Categorical",                            # prediction_type
-    len(class_names),                         # no_of_output_categories
-    "(224,224,3)",                            # input_shape (Must match model input)
-    f"{val_acc:.2f}",                         # validation_accuracy
-    f"{train_acc:.2f}",                       # train_accuracy
-    f"../prediction-model/{model_filename}",  # model_path
-    "MobileNetV2",                            # model_type
-    "MobileNetV2-GlobalAvgBase-Dense-256",    # architecture
-    "Adam",                                   # optimizer
-    "1e-4",                                   # learning_rate
-    30,                                       # epochs
-    output_labels_str                         # output_labels
-]
-
-# Append to CSV
+# Append to JSON
 try:
-    file_exists = os.path.isfile(csv_file_path)
-    os.makedirs(os.path.dirname(csv_file_path), exist_ok=True)
+    if os.path.isfile(json_file_path):
+        with open(json_file_path, "r", encoding="utf-8") as f:
+            try:
+                data = json.load(f)
+                if not isinstance(data, list):
+                    data = []
+            except json.JSONDecodeError:
+                data = []
+    else:
+        # If no JSON exists, check for CSV to migrate or start empty
+        data = []
+        
+    data.append(model_data)
     
-    with open(csv_file_path, mode='a', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
-        if not file_exists:
-            writer.writerow([
-                "model_name","prediction_type","no_of_output_categories","input_shape",
-                "validation_accuracy","train_accuracy","model_path","model_type",
-                "architecture","optimizer","learning_rate","epochs","output_labels"
-            ])
-        writer.writerow(row_data)
-    print(f"Model metadata saved to {csv_file_path}")
+    with open(json_file_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4)
+        
+    print(f"✅ Model metadata saved to {json_file_path}")
 except Exception as e:
-    print(f"Error saving to CSV: {e}")
+    print(f"❌ Error saving to JSON: {e}")

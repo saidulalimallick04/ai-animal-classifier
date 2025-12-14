@@ -12,7 +12,7 @@ def run():
     df = get_model_metadata()
 
     if df.empty:
-        st.warning("No model metadata found in CSV.")
+        st.warning("No model metadata found in Registry (JSON).")
         return
 
     # Create Main Tabs

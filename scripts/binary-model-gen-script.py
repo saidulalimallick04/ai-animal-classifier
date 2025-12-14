@@ -104,51 +104,57 @@ model.save(f'{model_dir}/{model_filename}')
 # -------------------------------------
 model.evaluate(val_generator)
 
+import json
+
 # -------------------------------------
-# 9. Save Metadata to CSV
+# 9. Save Metadata to JSON
 # -------------------------------------
 # Calculate final metrics
 final_train_acc = history.history['accuracy'][-1]
 final_val_acc = history.history['val_accuracy'][-1]
 
-csv_file_path = "../prediction-model/aaa-model-details.csv"
+json_file_path = "../prediction-model/model-details.json"
 
-# Columns: model_name, prediction_type, no_of_output_categories, input_shape,
-#          validation_accuracy, train_accuracy, model_path, model_type,
-#          architecture, optimizer, learning_rate, epochs, output_labels
+# Create Dictionary
+model_data = {
+    "model_name": f"binary_model_{time_str}",
+    "prediction_type": "Binary",
+    "no_of_output_categories": 2,
+    "input_shape": "(150,150,3)",
+    "validation_accuracy": float(f"{final_val_acc:.2f}"),
+    "train_accuracy": float(f"{final_train_acc:.2f}"),
+    "model_path": f"../Model/binary_models/{model_filename}",
+    "model_type": "SimpleCNN",
+    "architecture": "Conv2D-32-64-128-Dense-512",
+    "optimizer": "Adam",
+    "learning_rate": "default",
+    "epochs": 10,
+    "output_labels": "cats,dogs",
+    "g_drive_file_id": "no-url-found" # Default placeholder for manual update
+}
 
-row_data = [
-    f"binary_model_{time_str}",                 # model_name
-    "Binary",                                   # prediction_type
-    2,                                          # no_of_output_categories
-    "(150,150,3)",                              # input_shape
-    f"{final_val_acc:.2f}",                     # validation_accuracy
-    f"{final_train_acc:.2f}",                   # train_accuracy
-    f"../Model/binary_models/{model_filename}", # model_path
-    "SimpleCNN",                                # model_type
-    "Conv2D-32-64-128-Dense-512",               # architecture
-    "Adam",                                     # optimizer
-    "default",                                  # learning_rate
-    10,                                         # epochs
-    "cats,dogs"                                 # output_labels
-]
-
+# Append to JSON
 try:
-    file_exists = os.path.isfile(csv_file_path)
-    os.makedirs(os.path.dirname(csv_file_path), exist_ok=True)
+    if os.path.isfile(json_file_path):
+        with open(json_file_path, "r", encoding="utf-8") as f:
+            try:
+                data = json.load(f)
+                if not isinstance(data, list):
+                    data = []
+            except json.JSONDecodeError:
+                data = []
+    else:
+        # If no JSON exists, check for CSV to migrate or start empty
+        data = []
+        
+    data.append(model_data)
     
-    with open(csv_file_path, mode='a', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
-        if not file_exists:
-            writer.writerow([
-                "model_name", "prediction_type", "no_of_output_categories", "input_shape",
-                "validation_accuracy", "train_accuracy", "model_path", "model_type",
-                "architecture", "optimizer", "learning_rate", "epochs", "output_labels"
-            ])
-        writer.writerow(row_data)
-    print(f"✅ Model metadata saved to {csv_file_path}")
+    with open(json_file_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4)
+        
+    print(f"✅ Model metadata saved to {json_file_path}")
 except Exception as e:
-    print(f"❌ Error saving to CSV: {e}")
+    print(f"❌ Error saving to JSON: {e}")
 
 # Rate the Duration
 end_time = time.time()

@@ -1,0 +1,50 @@
+[
+    {
+        "model_name": "animalClassifier02",
+        "prediction_type": "Binary",
+        "no_of_output_categories": 2,
+        "input_shape": "(150,150,3)",
+        "validation_accuracy": 0.9,
+        "train_accuracy": 0.92,
+        "model_path": "../prediction-model/animalClassifier02.h5",
+        "model_type": "SimpleCNN",
+        "architecture": "SimpleCNN",
+        "optimizer": "Adam",
+        "learning_rate": 0.0001,
+        "epochs": 30,
+        "output_labels": "cat,dog",
+        "g_drive_file_id": "1QSnx8bCdhS2Y38x7CwciQqCJt6rKSumn"
+    },
+    {
+        "model_name": "animalClassifier99",
+        "prediction_type": "Categorical",
+        "no_of_output_categories": 99,
+        "input_shape": "(224,224,3)",
+        "validation_accuracy": 0.47,
+        "train_accuracy": 0.53,
+        "model_path": "../prediction-model/animalClassifier99.h5",
+        "model_type": "SimpleCNN",
+        "architecture": "SimpleCNN",
+        "optimizer": "Adam",
+        "learning_rate": 0.0001,
+        "epochs": 30,
+        "output_labels": "antelope,armadillo,badger,bat,bear,bee,beetle,bison,boar,butterfly,cat,caterpillar,chicken,chimpanzee,cockroach,cow,coyote,crab,crocodile,crow,deer,dog,dolphin,donkey,dragonfly,duck,eagle,elephant,flamingo,fly,fox,goat,goldfish,goose,gorilla,grasshopper,hamster,hare,hedgehog,hippopotamus,hornbill,horse,hummingbird,hyena,Jaguar,jellyfish,kangaroo,koala,ladybugs,leopard,lion,lizard,lobster,monkey,mosquito,moth,mouse,octopus,okapi,orangutan,otter,owl,ox,oyster,panda,parrot,pigeon,pelecaniformes,penguin,pig,porcupine,possum,rabbit,raccoon,rat,reindeer,rhinoceros,sandpiper,seahorse,seal,shark,sheep,skunk,snake,sparrow,spider,squid,squirrel,starfish,swan,tiger,turkey,turtle,whale,wild Boar,wolf,wombat,woodpecker,zebra",
+        "g_drive_file_id": "no-url-found"
+    },
+    {
+        "model_name": "animalClassifier99_20251214-141355",
+        "prediction_type": "Categorical",
+        "no_of_output_categories": 99,
+        "input_shape": "(224,224,3)",
+        "validation_accuracy": 0.85,
+        "train_accuracy": 0.93,
+        "model_path": "../prediction-model/animalClassifier99_20251214-141355.h5",
+        "model_type": "MobileNetV2",
+        "architecture": "MobileNetV2-GlobalAvgBase-Dense-256",
+        "optimizer": "Adam",
+        "learning_rate": 0.0001,
+        "epochs": 30,
+        "output_labels": "antelope,armadillo,badger,bat,bear,bee,beetle,bison,boar,butterfly,cat,caterpillar,chicken,chimpanzee,cockroach,cow,coyote,crab,crocodile,crow,deer,dog,dolphin,donkey,dragonfly,duck,eagle,elephant,flamingo,fly,fox,goat,goldfish,goose,gorilla,grasshopper,hamster,hare,hedgehog,hippopotamus,hornbill,horse,hummingbird,hyena,Jaguar,jellyfish,kangaroo,koala,ladybugs,leopard,lion,lizard,lobster,monkey,mosquito,moth,mouse,octopus,okapi,orangutan,otter,owl,ox,oyster,panda,parrot,pigeon,pelecaniformes,penguin,pig,porcupine,possum,rabbit,raccoon,rat,reindeer,rhinoceros,sandpiper,seahorse,seal,shark,sheep,skunk,snake,sparrow,spider,squid,squirrel,starfish,swan,tiger,turkey,turtle,whale,wild Boar,wolf,wombat,woodpecker,zebra",
+        "g_drive_file_id": "1u7m2VNqgfM-HAxnUiID-kdar4Yi9-8Og"
+    }
+]

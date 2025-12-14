@@ -9,6 +9,8 @@ from PIL import Image
 from core.sidebar import load_sidebar
 from core.model import load_model, predict
 from core.preprocess import load_and_preprocess_image
+from core.prediction import run_prediction_pipeline
+from core.history import update_last_prediction_feedback
 
 def run():
     st.title("🎥 Live Prediction")
@@ -32,7 +34,7 @@ def run():
     input_image = None
     
     with tab1:
-        camera_image = st.camera_input("Take a picture")
+        camera_image = st.camera_input("Take a picture",)
         if camera_image:
             input_image = camera_image
 
@@ -45,62 +47,71 @@ def run():
         # Display image
         image = Image.open(input_image)
         st.image(image, caption="Input Image", width=300)
+        
+        # Generate a unique key for the current image
+        # For CameraInput, it's bytes. For FileUploader, it's a file-like object with name.
+        if hasattr(input_image, 'name'):
+            current_image_key = f"{input_image.name}_{input_image.size}"
+        else:
+            # Camera input (bytesIO), use hash/size
+            current_image_key = f"cam_{input_image.getvalue().__sizeof__()}"
 
-        if st.button("Predict"):
+        # Initialize session state for this page if needed
+        if 'live_last_image_key' not in st.session_state:
+            st.session_state.live_last_image_key = None
+            
+        if 'live_prediction_result' not in st.session_state:
+            st.session_state.live_prediction_result = None
+            
+        # Check if image changed (Clear result if new image)
+        if st.session_state.live_last_image_key != current_image_key:
+            st.session_state.live_prediction_result = None
+            st.session_state.live_last_image_key = current_image_key
+
+        if st.button("Predict 🚀", type="primary"):
+            st.session_state.live_prediction_result = None # Clear old
             with st.spinner("Processing..."):
                 try:
-                    # Preprocess
-                    # Note: We need a way to pass the file content or save it temp.
-                    # preprocess.py likely takes a path or handles bytes.
-                    # Let's check preprocess.py first or adapt. 
-                    # For now, I'll assume load_and_preprocess_image handles paths.
-                    # I'll save to a temp path for compatibility.
+                    # Run the generalized pipeline
+                    result = run_prediction_pipeline(
+                        model=model,
+                        model_path=model_path,
+                        image=image
+                    )
                     
-                    
-                    
-                    with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp:
-                         image.save(tmp.name)
-                         tmp_path = tmp.name
-
-                    # Prepare for model
-                    # Fetch metadata for dynamic input_shape
-                    from core.model import get_model_metadata
-                    
-                    target_size = (224, 224) # Default
-                    
-                    try:
-                        meta_df = get_model_metadata()
-                        current_filename = model_path.name
-                        model_row = meta_df[meta_df['model_path'].apply(lambda x: str(x).endswith(current_filename))]
-                        
-                        if not model_row.empty:
-                            shape_str = model_row.iloc[0]['input_shape']
-                            clean_shape = shape_str.replace('(', '').replace(')', '').replace('"', '').replace("'", "")
-                            dims = [int(x.strip()) for x in clean_shape.split(',')]
-                            if len(dims) >= 2:
-                                target_size = (dims[0], dims[1])
-                    except Exception as meta_err:
-                        print(f"Metadata fetch warning: {meta_err}")
-
-                    processed_img = load_and_preprocess_image(tmp_path, target_size=target_size)
-                    
-                    # Cleanup
-                    os.remove(tmp_path)
-
-                    # Predict
-                    predictions = predict(model, processed_img)
-                    
-                    # Parse results (Assuming classification)
-                    # We might need class names. For now, showing raw top index.
-                    class_idx = np.argmax(predictions, axis=1)[0]
-                    confidence = np.max(predictions)
-                    
-                    st.markdown(f"### Prediction Result")
-                    st.success(f"**Class Index:** {class_idx}")
-                    st.info(f"**Confidence:** {confidence:.2f}")
+                    # Store in session state
+                    st.session_state.live_prediction_result = result
                     
                 except Exception as e:
-                     st.error(f"Prediction error: {e}")
+                    st.error(f"Prediction error: {e}")
+
+        # Display Result if exists
+        if st.session_state.get('live_prediction_result'):
+            res = st.session_state.live_prediction_result
+            
+            st.subheader("Prediction Results")
+            c1, c2 = st.columns(2, border=True)
+            c1.metric("Prediction", res['label'].title())
+            c2.metric("Confidence", f"{res['confidence']*100:.2f}%")
+            
+            # Feedback Section
+            if not res['feedback_given']:
+                st.markdown("<h4 style='text-align: center;'>Satisfied?</h4>", unsafe_allow_html=True)
+                col_f1, col_f2, col_f3, col_f4 = st.columns([2,1,1,2])
+                with col_f2:
+                    if st.button("👍", key="live_up"):
+                        update_last_prediction_feedback(res['model_name'], 1)
+                        res['feedback_given'] = True
+                        st.session_state.live_prediction_result = res
+                        st.rerun()
+                with col_f3:
+                    if st.button("👎", key="live_down"):
+                        update_last_prediction_feedback(res['model_name'], -1)
+                        res['feedback_given'] = True
+                        st.session_state.live_prediction_result = res
+                        st.rerun()
+            else:
+                st.success("Thanks for your feedback!")
 
 if __name__ == "__main__":
     run()
