@@ -63,6 +63,7 @@ pages = [
     st.Page("pages/05_Prediction_History_Page.py", title="Prediction History", icon="📜", url_path="prediction-history/"),
     st.Page("pages/06_Model_Details_Page.py", title="Model Details", icon="🛠️", url_path="model-details/"),
     st.Page("pages/09_About_Page.py", title="About", icon="ℹ️", url_path="about/"),
+    st.Page("pages/10_Old_App.py", title="Old Interface", icon="🔙", url_path="old-interface/"),
 ]
 
 pg = st.navigation(pages)

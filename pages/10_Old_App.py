@@ -8,7 +8,7 @@ import gdown
 
 # Google Drive file ID and destination
 FILE_ID = '1QSnx8bCdhS2Y38x7CwciQqCJt6rKSumn'  # replace with your file ID
-MODEL_PATH = 'model.h5'
+MODEL_PATH = 'prediction-model/old-model.h5'
 
 @st.cache_resource
 def download_and_load_model():
@@ -44,8 +44,5 @@ if st.button("Predict"):
         st.success(f"Predicted Image : **{result}**")
 
         st.image(uploaded_file,caption="Uploaded Image",width="stretch")
-        
-        
-
     else: 
         st.error("Upload an Image")
