@@ -7,9 +7,10 @@ def run():
     st.markdown("---")
 
     # 1. Project Overview
-    st.header("🌟 Project Overview")
+    
     c1, c2 = st.columns([2, 1])
     with c1:
+        st.header("🌟 Project Overview")
         st.write("""
         The **AI Animal Classifier** is a state-of-the-art computer vision application designed to identify 99 different animal species from images. 
         It leverages the power of Deep Learning, specifically Convolutional Neural Networks (CNNs), to analyze visual patterns and predict animal categories with high accuracy.
@@ -17,7 +18,7 @@ def run():
         Use cases include educational tools, wildlife monitoring assistance, or simply satisfying your curiosity about that strange bug in your garden!
         """)
     with c2:
-        st.image("https://images.unsplash.com/photo-1555169062-013468b47731?q=80&w=1000&auto=format&fit=crop", caption="AI & Nature", width="stretch")
+        st.image("assets/sample-1.png", caption="AI & Nature", width="stretch")
 
     st.markdown("---")
 
@@ -29,26 +30,26 @@ def run():
     with mac1:
         st.markdown("### 🧠 Core AI")
         st.markdown("- **TensorFlow & Keras**")
-        st.markdown("- **CNN Architecture**")
+        st.markdown("- **MobileNetV2 (Transfer Learning)**")
         st.markdown("- **NumPy & Pandas**")
     
     with mac2:
         st.markdown("### 🎨 Frontend")
         st.markdown("- **Streamlit** (UI Framework)")
         st.markdown("- **Pillow** (Image Processing)")
-        st.markdown("- **Matplotlib** (Visualization)")
+        st.markdown("- **Altair** (Visualization)")
         
     with mac3:
         st.markdown("### ⚙️ Backend")
         st.markdown("- **Python 3.10+**")
-        st.markdown("- **Session State Management**")
-        st.markdown("- **CSV Persistence**")
+        st.markdown("- **JSON Metadata Registry**")
+        st.markdown("- **Google Drive Integration**")
         
     with mac4:
         st.markdown("### 🔧 Tools")
         st.markdown("- **VS Code**")
         st.markdown("- **Git & GitHub**")
-        st.markdown("- **Google Colab** (Training)")
+        st.markdown("- **Streamlit** (Deploy)")
 
     st.markdown("---")
 
@@ -58,10 +59,10 @@ def run():
         st.write("We curated a dataset of 99 animal categories. Images were resized, normalized, and augmented (rotation, flips) to ensure the model generalizes well to new data.")
         
     with st.expander("Step 2: Model Training", expanded=True):
-        st.write("We designed a custom CNN architecture with multiple Convolutional and MaxPooling layers. The model was trained using the Adam optimizer and Categorical Crossentropy loss function over 30+ epochs.")
+        st.write("We leveraged Transfer Learning with **MobileNetV2** for superior accuracy. The model was trained using the Adam optimizer and Categorical Crossentropy loss function, fine-tuned over multiple epochs.")
         
     with st.expander("Step 3: Web App Integration", expanded=True):
-        st.write("We built a multi-page interactive dashboard using Streamlit, allowing users to upload images, view real-time predictions, track history, and analyze model metadata.")
+        st.write("We built a multi-page interactive dashboard using Streamlit, featuring live prediction, history tracking, and a dynamic model registry powered by JSON.")
 
     st.markdown("---")
 

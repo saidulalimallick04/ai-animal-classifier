@@ -27,7 +27,7 @@ def home():
         )
     with col2:
         st.image(
-            "https://images.unsplash.com/photo-1764767168158-9f05d34e3881?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            "assets/sample-1.png",
             caption="AI Animal Classifier",
             width='stretch',
         )
